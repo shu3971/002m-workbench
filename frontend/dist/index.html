@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>002M 工作台</title>
+  <link rel="icon" href="/mark.svg" type="image/svg+xml"/>
+  <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="34" height="34"><path d="M10 33V15l7 9 7-9 7 9 7-9v18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><circle cx="24" cy="24" r="17" fill="none" stroke="currentColor" stroke-width="1" opacity=".55"/></svg>
+      </div>
+      <div>
+        <div class="brand-name">002M 工作台</div>
+        <div class="brand-sub">DESKTOP STUDIO · v1.0.0</div>
+      </div>
+    </div>
+    <nav class="nav" id="nav">
+      <button class="nav-item is-active" data-view="gallery"><span class="nav-ico">◈</span><span>案例画廊</span></button>
+      <button class="nav-item" data-view="create"><span class="nav-ico">✦</span><span>照片生图</span></button>
+      <button class="nav-item" data-view="faceswap"><span class="nav-ico">⧉</span><span>换脸套图</span></button>
+      <button class="nav-item" data-view="history"><span class="nav-ico">▤</span><span>本地历史</span><span class="nav-count" id="navHistoryCount">0</span></button>
+      <button class="nav-item" data-view="settings"><span class="nav-ico">⚙</span><span>设置</span></button>
+    </nav>
+    <div class="side-foot">
+      <div class="quota-mini">
+        <span class="eyebrow">本机额度</span>
+        <div><strong id="sideFree">—</strong> 免费 <span class="dot">·</span> <strong id="sideCredit">—</strong> 付费</div>
+      </div>
+      <a href="https://002m.com" target="_blank" rel="noopener" class="side-link">002m.com ↗</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <div class="page-kicker" id="pageKicker">GALLERY</div>
+        <h1 id="pageTitle">案例画廊</h1>
+      </div>
+      <div class="top-actions">
+        <div class="quota-pill" id="quotaPill" title="额度来自 gen.002m.com">
+          <span class="quota-dot"></span>
+          <span id="quotaText">查询中…</span>
+        </div>
+        <button class="icon-btn" id="refreshBtn" title="刷新额度与历史">↻</button>
+      </div>
+    </header>
+
+    <section class="view is-active" data-view="gallery">
+      <div class="lede">
+        <p>从已批准案例里找灵感：按标题、标签搜索，点开看大图、提示词和 remix 变量。</p>
+        <span class="lede-badge" id="caseCountBadge">— 条</span>
+      </div>
+      <div class="toolbar gallery-toolbar">
+        <div class="search-wrap">
+          <span class="search-ico">⌕</span>
+          <input id="caseSearch" type="search" placeholder="搜索标题 / 标签 / 提示词…" autocomplete="off"/>
+          <button class="clear-btn" id="caseSearchClear" hidden>×</button>
+        </div>
+        <div class="chips" id="categoryChips"></div>
+        <select id="tagFilter" class="select"><option value="">全部标签</option></select>
+      </div>
+      <div class="result-line"><span id="caseResultCount">—</span><span class="muted" id="caseFilterHint"></span></div>
+      <div class="case-grid" id="caseGrid"></div>
+      <div class="empty" id="caseEmpty" hidden>
+        <div class="empty-mark">◌</div>
+        <p>没有匹配的案例</p>
+        <button class="text-btn" id="caseReset">清空筛选</button>
+      </div>
+    </section>
+
+    <section class="view" data-view="create">
+      <div class="lede">
+        <p>上传一张照片 + 英文提示词。尺寸按照片方向自动选择；每成功出图扣 1 额度。</p>
+        <span class="lede-badge amber">照片只发 gen.002m.com</span>
+      </div>
+      <div class="work-grid">
+        <div class="panel">
+          <div class="panel-head"><span class="step-no">01</span><h2>照片</h2><span class="muted">JPG / PNG，≤ 20 MB</span></div>
+          <div class="dropzone" id="photoDrop" tabindex="0" role="button" aria-label="选择照片">
+            <input id="photoInput" type="file" accept="image/jpeg,image/png" hidden/>
+            <div class="drop-empty" id="photoEmpty">
+              <div class="drop-ico">＋</div>
+              <strong>点这里选照片</strong>
+              <span>或把文件拖进来</span>
+            </div>
+            <img id="photoPreview" alt="照片预览" hidden/>
+          </div>
+          <div class="file-meta" id="photoMeta" hidden>
+            <span id="photoName"></span><button class="text-btn" id="photoRemove">移除</button>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><span class="step-no">02</span><h2>英文提示词</h2><span class="muted">越具体越稳</span></div>
+          <textarea id="promptInput" class="prompt-area" maxlength="5000" placeholder="A natural portrait photo of ..."></textarea>
+          <div class="prompt-foot"><span class="muted" id="promptCount">0 / 5000</span><span class="muted">建议英文描述主体、服装、场景、光线、画幅</span></div>
+          <div class="action-row">
+            <button class="primary-btn" id="generateBtn">生成图片 <span class="btn-arrow">→</span></button>
+            <span class="hint" id="generateHint">每张扣 1 额度</span>
+          </div>
+        </div>
+        <div class="panel result-panel">
+          <div class="panel-head"><span class="step-no">03</span><h2>结果</h2><span class="muted">成图自动进本地历史</span></div>
+          <div class="result-box" id="createResult">
+            <div class="result-placeholder"><span>还没有生成结果</span><small>上传照片、写好提示词后点「生成图片」</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" data-view="faceswap">
+      <div class="lede">
+        <p>一张头像 + 最多 12 张参考图。以参考图为底图，只换脸，其余保持原样；逐张生成、失败跳过。</p>
+        <span class="lede-badge">每张扣 1 额度</span>
+      </div>
+      <div class="work-grid faceswap-grid">
+        <div class="panel">
+          <div class="panel-head"><span class="step-no">01</span><h2>头像</h2><span class="muted">JPG / PNG</span></div>
+          <div class="dropzone compact" id="avatarDrop" tabindex="0" role="button" aria-label="选择头像">
+            <input id="avatarInput" type="file" accept="image/jpeg,image/png" hidden/>
+            <div class="drop-empty" id="avatarEmpty"><div class="drop-ico">＋</div><strong>选择头像</strong><span>脸要清晰</span></div>
+            <img id="avatarPreview" alt="头像预览" hidden/>
+          </div>
+          <div class="file-meta" id="avatarMeta" hidden><span id="avatarName"></span><button class="text-btn" id="avatarRemove">移除</button></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><span class="step-no">02</span><h2>参考图</h2><span class="muted" id="refCount">0 / 12</span></div>
+          <div class="dropzone compact" id="refDrop" tabindex="0" role="button" aria-label="选择参考图">
+            <input id="refInput" type="file" accept="image/jpeg,image/png" multiple hidden/>
+            <div class="drop-empty"><div class="drop-ico">＋</div><strong>选择 1–12 张参考图</strong><span>可多选</span></div>
+          </div>
+          <div class="ref-strip" id="refStrip"></div>
+        </div>
+        <div class="panel faceswap-prompt">
+          <div class="panel-head"><span class="step-no">03</span><h2>换脸提示词</h2><span class="muted">固定，不改</span></div>
+          <p id="faceswapPromptText">以第一张图片为底图，只把图中人物的脸换成第二张图片中人物的脸。脸部以外的所有内容必须保持原样：服装、姿势、背景、光线、构图、画幅都不要动，不要重新生成整张图。</p>
+          <div class="action-row">
+            <button class="primary-btn" id="faceswapBtn">开始换脸 <span class="btn-arrow">→</span></button>
+            <button class="ghost-btn" id="faceswapClear">清空</button>
+            <span class="hint" id="faceswapHint">按顺序逐张生成</span>
+          </div>
+        </div>
+        <div class="panel result-panel wide">
+          <div class="panel-head"><h2>结果</h2><span class="muted">失败的参考图不扣费</span></div>
+          <div class="result-box" id="faceswapResult">
+            <div class="result-placeholder"><span>还没有换脸结果</span><small>上传头像和参考图后开始</small></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="view" data-view="history">
+      <div class="lede">
+        <p>成图落本地作品目录，SQLite 记录提示词与来源；可搜索、星标、导出、打开文件夹。</p>
+        <span class="lede-badge" id="historyCountBadge">0 条</span>
+      </div>
+      <div class="toolbar">
+        <div class="search-wrap"><span class="search-ico">⌕</span><input id="historySearch" type="search" placeholder="搜索提示词…" autocomplete="off"/></div>
+        <select id="historySource" class="select"><option value="">全部来源</option><option value="gen">照片生图</option><option value="faceswap">换脸套图</option></select>
+        <label class="check"><input type="checkbox" id="historyStarred"/> 只看星标</label>
+        <button class="ghost-btn" id="exportBtn">导出记录</button>
+        <button class="ghost-btn" id="openWorksBtn">打开作品目录</button>
+      </div>
+      <div class="history-grid" id="historyGrid"></div>
+      <div class="empty" id="historyEmpty" hidden><div class="empty-mark">◌</div><p>还没有历史记录</p></div>
+    </section>
+
+    <section class="view" data-view="settings">
+      <div class="lede"><p>设备身份、额度、代理与更新。没有账号登录，也不做任何数据上报。</p><span class="lede-badge">本地优先</span></div>
+      <div class="settings-grid">
+        <div class="panel">
+          <div class="panel-head"><h2>设备与额度</h2><span class="muted">Cookie gb_id</span></div>
+          <div class="kv"><span>设备 ID</span><code id="deviceId">—</code><button class="text-btn" id="copyDevice">复制</button></div>
+          <div class="kv"><span>免费额度</span><strong id="settingFree">—</strong></div>
+          <div class="kv"><span>付费额度</span><strong id="settingCredit">—</strong></div>
+          <div class="kv"><span>数据目录</span><code id="dataDir">—</code><button class="text-btn" id="openData">打开</button></div>
+          <div class="action-row"><button class="ghost-btn" id="refreshStatus">刷新额度</button><a class="ghost-btn" href="https://gen.002m.com" target="_blank" rel="noopener">购买额度 ↗</a></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>兑换码</h2><span class="muted">只用于本次核销，不存盘</span></div>
+          <input id="redeemCode" class="text-input" placeholder="P2-XXXXXXXX" autocomplete="off"/>
+          <div class="action-row"><button class="primary-btn" id="redeemBtn">兑换</button><span class="hint" id="redeemHint"></span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>网络代理</h2><span class="muted">生图与案例图下载</span></div>
+          <div class="proxy-options">
+            <label class="radio"><input type="radio" name="proxyMode" value="system"/> 跟随系统代理</label>
+            <label class="radio"><input type="radio" name="proxyMode" value="none"/> 不使用代理</label>
+            <label class="radio"><input type="radio" name="proxyMode" value="manual"/> 手动填写</label>
+          </div>
+          <input id="proxyURL" class="text-input" placeholder="http://127.0.0.1:7890"/>
+          <div class="action-row"><button class="ghost-btn" id="saveProxy">保存代理</button><span class="hint" id="proxyHint">也支持 HTTP_PROXY / HTTPS_PROXY 环境变量</span></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>版本与更新</h2><span class="muted">GitHub Releases</span></div>
+          <div class="kv"><span>当前版本</span><strong>v1.0.0</strong></div>
+          <div class="kv"><span>最新版本</span><strong id="latestVersion">—</strong></div>
+          <div class="action-row"><button class="ghost-btn" id="checkUpdate">检查更新</button><a class="ghost-btn" href="https://github.com/shu3971/002m-workbench/releases" target="_blank" rel="noopener">Releases ↗</a></div>
+          <p class="hint" id="updateHint">有新版只提示，不强制更新。</p>
+        </div>
+      </div>
+      <div class="privacy-note">
+        <strong>隐私说明</strong>
+        <p>照片只在生图/换脸时发送到 gen.002m.com；原片不上传服务器，成图在服务器约存 30 天，本地作品目录优先保存。应用不做数据上报、不接账号体系。</p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="caseModal" hidden>
+  <div class="modal-backdrop" data-close="1"></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-close" id="modalClose" aria-label="关闭">×</button>
+    <div class="modal-media"><img id="modalImage" alt="案例大图"/></div>
+    <div class="modal-body">
+      <div class="modal-meta"><span class="tag" id="modalCategory"></span><span id="modalId" class="muted"></span></div>
+      <h2 id="modalTitle"></h2>
+      <div class="modal-tags" id="modalTags"></div>
+      <div class="prompt-tabs"><button class="tab is-active" data-lang="en">English</button><button class="tab" data-lang="zh">中文</button></div>
+      <pre class="prompt-box" id="modalPrompt"></pre>
+      <div class="remix-block" id="modalRemix"></div>
+      <div class="action-row"><button class="primary-btn" id="usePromptBtn">用这个提示词 <span class="btn-arrow">→</span></button></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="/app.js"></script>
+</body>
+</html>

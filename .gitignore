@@ -1,0 +1,36 @@
+# build outputs
+bin/
+*.exe
+*.app
+*.dmg
+*.zip
+
+# template platform assets not used by the desktop v1 build
+build/android/
+build/ios/
+build/linux/
+build/docker/
+build/appicon.icon/
+
+# local test data
+.smoke-data*/
+.smoke-ui/
+.smoke-out.txt
+.smoke-err.txt
+.ui-out.txt
+.ui-err.txt
+.slowcheck.js
+.test-assets/
+.shots/
+.site.html
+.task/
+
+# tooling caches
+tools/ui-check/node_modules/
+tools/ui-check/*.png
+tools/ui-check/slowcheck.js
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log

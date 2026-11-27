@@ -1,0 +1,34 @@
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>CFBundlePackageType</key>
+            <string>APPL</string>
+        <key>CFBundleName</key>
+            <string>002M 工作台</string>
+        <key>CFBundleExecutable</key>
+            <string>002m-workbench</string>
+        <key>CFBundleIdentifier</key>
+            <string>com.002m.workbench</string>
+        <key>CFBundleVersion</key>
+            <string>1.0.0</string>
+        <key>CFBundleGetInfoString</key>
+            <string>https://002m.com</string>
+        <key>CFBundleShortVersionString</key>
+            <string>1.0.0</string>
+        <key>CFBundleIconFile</key>
+            <string>icons</string>
+        <key>CFBundleIconName</key>
+            <string>appicon</string>
+        <key>LSMinimumSystemVersion</key>
+            <string>12.0.0</string>
+        <key>NSHighResolutionCapable</key>
+            <string>true</string>
+        <key>NSHumanReadableCopyright</key>
+            <string>© 2026, 002M画境</string>
+        <key>NSAppTransportSecurity</key>
+        <dict>
+            <key>NSAllowsLocalNetworking</key>
+            <true/>
+        </dict>
+    </dict>
+</plist>
