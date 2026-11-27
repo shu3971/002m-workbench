@@ -141,10 +141,17 @@ jobs:
       - name: List release files
         run: ls -lh dist
 
+      - name: Generate SHA256SUMS
+        run: |
+          cd dist
+          sha256sum * > SHA256SUMS
+          cat SHA256SUMS
+
       - uses: softprops/action-gh-release@v2
         with:
           files: |
             dist/002m-workbench-windows-amd64.exe
             dist/002m-workbench-macos-arm64.zip
+            dist/SHA256SUMS
           generate_release_notes: true
           fail_on_unmatched_files: true
