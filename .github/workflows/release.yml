@@ -116,8 +116,7 @@ jobs:
         shell: bash
         run: |
           test -d "bin/002m-workbench.app"
-          cd bin
-          "/c/Program Files/7-Zip/7z.exe" a -tzip "../002m-workbench-macos-arm64.zip" "002m-workbench.app"
+          python tools/package_macos_zip.py bin/002m-workbench.app 002m-workbench-macos-arm64.zip
 
       - uses: actions/upload-artifact@v4
         with:
