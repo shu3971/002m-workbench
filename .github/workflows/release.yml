@@ -81,12 +81,6 @@ jobs:
           go-version-file: go.mod
           cache: true
 
-      - name: Install Wails v3 CLI
-        shell: bash
-        run: |
-          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
-          go install github.com/wailsapp/wails/v3/cmd/wails3@v3.1.0
-
       - name: Static frontend checks
         shell: bash
         run: |
@@ -96,11 +90,27 @@ jobs:
           test -f frontend/dist/mark.svg
           test -f frontend/dist/data/cases.json
 
-      - name: Build CGO-free macOS arm64 app
+      - name: Build CGO-free macOS arm64 binary
+        shell: bash
+        env:
+          GOOS: darwin
+          GOARCH: arm64
+          CGO_ENABLED: "0"
+        run: |
+          go build -tags "production,purego" -trimpath -buildvcs=false -ldflags="-w -s" -o bin/002m-workbench .
+
+      - name: Assemble .app bundle
         shell: bash
         run: |
-          export PATH="/c/Program Files/Git/usr/bin:$PATH"
-          wails3 package GOOS=darwin ARCH=arm64 EXTRA_TAGS=purego
+          test -f "bin/002m-workbench"
+          test "$(go version -m bin/002m-workbench | head -1)" != ""
+          rm -rf "bin/002m-workbench.app"
+          mkdir -p "bin/002m-workbench.app/Contents/MacOS" "bin/002m-workbench.app/Contents/Resources"
+          cp "bin/002m-workbench" "bin/002m-workbench.app/Contents/MacOS/002m-workbench"
+          cp "build/darwin/Info.plist" "bin/002m-workbench.app/Contents/Info.plist"
+          cp "build/darwin/icons.icns" "bin/002m-workbench.app/Contents/Resources/icons.icns"
+          if [ -f "build/darwin/Assets.car" ]; then cp "build/darwin/Assets.car" "bin/002m-workbench.app/Contents/Resources/Assets.car"; fi
+          file "bin/002m-workbench.app/Contents/MacOS/002m-workbench"
 
       - name: Package app
         shell: bash
