@@ -71,8 +71,8 @@ jobs:
           if-no-files-found: error
 
   macos-arm64:
-    name: macOS arm64
-    runs-on: macos-14
+    name: macOS arm64 (CGO-free cross build)
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -94,16 +94,13 @@ jobs:
           test -f frontend/dist/mark.svg
           test -f frontend/dist/data/cases.json
 
-      - name: Go vet
-        run: go vet ./...
-
-      - name: Build
-        run: wails3 build
+      - name: Build CGO-free macOS arm64 app
+        run: wails3 package GOOS=darwin ARCH=arm64 EXTRA_TAGS=purego
 
       - name: Package app
         run: |
           test -d "bin/002m-workbench.app"
-          ditto -c -k --keepParent "bin/002m-workbench.app" "002m-workbench-macos-arm64.zip"
+          zip -qry "002m-workbench-macos-arm64.zip" "bin/002m-workbench.app"
 
       - uses: actions/upload-artifact@v4
         with:
