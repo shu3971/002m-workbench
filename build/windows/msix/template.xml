@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MsixPackagingToolTemplate
+    xmlns="http://schemas.microsoft.com/msix/packaging/msixpackagingtool/template/2022">
+    <Settings
+        AllowTelemetry="false"
+        ApplyACLsToPackageFiles="true"
+        GenerateCommandLineFile="true"
+        AllowPromptForPassword="false">
+    </Settings>
+    <Installer
+        Path="002m-workbench.exe"
+        Arguments=""
+        InstallLocation="C:\Program Files\002M画境\002M 工作台">
+    </Installer>
+    <PackageInformation
+        PackageName="002M 工作台"
+        PackageDisplayName="002M 工作台"
+        PublisherName="CN=002M画境"
+        PublisherDisplayName="002M画境"
+        Version="1.0.0.0"
+        PackageDescription="002M 桌面工作台">
+        <Capabilities>
+            <Capability Name="runFullTrust" />
+            
+        </Capabilities>
+        <Applications>
+            <Application
+                Id="com.002m.workbench"
+                Description="002M 桌面工作台"
+                DisplayName="002M 工作台"
+                ExecutableName="002m-workbench.exe"
+                EntryPoint="Windows.FullTrustApplication">
+                
+            </Application>
+        </Applications>
+        <Resources>
+            <Resource Language="en-us" />
+        </Resources>
+        <Dependencies>
+            <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.17763.0" MaxVersionTested="10.0.19041.0" />
+        </Dependencies>
+        <Properties>
+            <Framework>false</Framework>
+            <DisplayName>002M 工作台</DisplayName>
+            <PublisherDisplayName>002M画境</PublisherDisplayName>
+            <Description>002M 桌面工作台</Description>
+            <Logo>Assets\AppIcon.png</Logo>
+        </Properties>
+    </PackageInformation>
+    <SaveLocation PackagePath="002m-workbench.msix" />
+    <PackageIntegrity>
+        <CertificatePath></CertificatePath>
+    </PackageIntegrity>
+</MsixPackagingToolTemplate>

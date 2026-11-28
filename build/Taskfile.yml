@@ -1,0 +1,37 @@
+version: '3'
+
+tasks:
+  go:mod:tidy:
+    summary: Runs `go mod tidy`
+    internal: true
+    # Universal/multi-arch builds invoke this concurrently from parallel deps;
+    # two `go mod tidy` processes racing on go.mod can corrupt it.
+    run: once
+    cmds:
+      - go mod tidy
+
+  build:frontend:
+    label: build:frontend (static assets)
+    summary: Verify the pure HTML/CSS/JS frontend without npm, Vite or bindings
+    run: once
+    cmds:
+      - |
+        set -e
+        cd frontend/dist
+        test -f index.html
+        test -f style.css
+        test -f app.js
+        test -f data/cases.json
+        echo "static frontend ready: index.html, style.css, app.js, data/cases.json"
+
+  generate:icons:
+    summary: Generates Windows `.ico` and macOS `.icns` from the PNG icon
+    run: once
+    dir: build
+    sources:
+      - "appicon.png"
+    generates:
+      - "darwin/icons.icns"
+      - "windows/icon.ico"
+    cmds:
+      - wails3 generate icons -input appicon.png -macfilename darwin/icons.icns -windowsfilename windows/icon.ico

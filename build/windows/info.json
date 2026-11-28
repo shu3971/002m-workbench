@@ -1,0 +1,17 @@
+{
+	"fixed": {
+		"file_version": "1.0.0",
+		"product_version": "1.0.0"
+	},
+	"info": {
+		"0409": {
+			"FileVersion": "1.0.0",
+			"ProductVersion": "1.0.0",
+			"CompanyName": "002M画境",
+			"FileDescription": "002M 桌面工作台",
+			"LegalCopyright": "© 2026, 002M画境",
+			"ProductName": "002M 工作台",
+			"Comments": "https://002m.com"
+		}
+	}
+}
