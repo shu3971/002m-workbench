@@ -141,7 +141,7 @@ tools/         案例快照生成脚本、Playwright UI 冒烟
 - `/api/bootstrap` 返回 307 条案例；无 token 请求返回 403
 - 真实文生图：设备 `AAAAAAAAAAAA` 起始余额 `trialLeft=3 / freeLeft=3 / credit=0`；1 张成功，耗时 81.6s，`charged:true`，余额变为 `2 / 2 / 0`
 - 真实换脸套图：头像 1 张 + 参考图 2 张，返回 `requested:2 generated:2`，耗时 165.1s，`charged:true`，余额变为 `0 / 0 / 0`；两张成图均 1024×1536 PNG
-- 坏文件（文本冒充 JPG）POST `/api/gen` 返回 400、`charged:false`，余额保持 `0 / 0 / 0`
+- 坏文件（文本冒充 JPG）POST `/api/gen` 返回 400、`charged:false`；在未消耗额度的 `H7K3M9P2Q5TX` 上验证余额保持 `3 / 3 / 0`，`AAAAAAAAAAAA` 上保持 `0 / 0 / 0`
 - 本地历史：生成 3 条（1 张生图 + 2 张换脸）；进程退出重启后仍返回 3 条；导出返回 `count:3`，目录内含 `history.json` 与 3 张 PNG
 - 首次真实生图暴露出客户端 30s `ResponseHeaderTimeout` 过短，会在上游出图前误报 502；已调整为 180s，随后两次真实请求均成功
 
