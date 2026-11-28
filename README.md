@@ -12,7 +12,7 @@
 
 ## 功能
 
-**案例画廊**：内置 295 条案例快照，支持关键词搜索和标签筛选。缩略图按需从官网拉取并缓存在本地，点开卡片可以看到大图、中英文提示词和 remix 变量，一键把提示词带到生图页。
+**案例画廊**：内置 307 条案例快照，支持关键词搜索和标签筛选。缩略图按需从官网拉取并缓存在本地，点开卡片可以看到大图、中英文提示词和 remix 变量，一键把提示词带到生图页。
 
 ![案例详情](docs/modal.jpg)
 
@@ -132,17 +132,22 @@ tools/         案例快照生成脚本、Playwright UI 冒烟
 
 ## 验收记录
 
-2026-11-27，Windows 11 + Go 1.27.4 + Wails v3.1.0：
+2026-11-28，Windows 11 + Go 1.27.4 + Wails v3.1.0：
 
-- `wails3 build` 退出码 0，产出 `bin/002m-workbench.exe`；进程可启动，主窗口标题「002M 工作台」，窗口内 WebView 正常加载
-- `GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 go build -tags "production,purego"` 退出码 0，产出 Mach-O arm64 二进制，按 `build/darwin/Info.plist` 组装为 `bin/002m-workbench.app`，`CFBundleExecutable=002m-workbench`，已加 `NSAllowsLocalNetworking`；仅验证包结构，未在 Apple Silicon 真机启动
-- UI 冒烟：295 张案例卡、详情弹层、五个页面均正常，浏览器控制台 0 报错
-- `/api/bootstrap` 返回 295 条案例、`free=3`；无 token 请求返回 403
-- 坏图（文本冒充 JPG）POST `/api/gen` 返回 400、`charged:false`，额度保持 3
-- 历史导出返回 `count:0` 和导出目录；设置、更新检查接口正常
-- 真实生图 / 换脸：测试设备 `AAAAAAAAAAAA`、`H7K3M9P2Q5TX` 均返回 502，客户端日志为 `上游未出图（HTTP 403），请稍后重试`；两次换脸 `generated:0`，额度未扣。这是 `gen.002m.com` 上游故障，不是本地校验或计费逻辑；上游恢复后需补一次真图验收
+- 案例快照：`approved=307 built=307 missing=0`，307 个 id 全部唯一；新增的 12 条均有可用图片，逐个 `/thumb/<id>` 返回 200
+- `wails3 build` 退出码 0，产出 `bin/002m-workbench.exe`（17,996,800 字节，SHA256 `62BB7117DE1DC9565399E5DA5A27D1F7F8407FEDC40C7CA62619E4F4267CF4A4`）；主窗口可启动
+- UI 冒烟：307 张案例卡、`307 条`计数、详情弹层与五个页面均正常；一次首屏请求出现上游缩略图瞬时 502，复跑全页资源审计 0 个 4xx/5xx
+- macOS 包：CI 交叉构建的 arm64 `.app` 已校验 `CFBundleExecutable=002m-workbench`、`NSAllowsLocalNetworking`、二进制 0755；未在 Apple Silicon 真机启动
+- `/api/bootstrap` 返回 307 条案例；无 token 请求返回 403
+- 真实文生图：设备 `AAAAAAAAAAAA` 起始余额 `trialLeft=3 / freeLeft=3 / credit=0`；1 张成功，耗时 81.6s，`charged:true`，余额变为 `2 / 2 / 0`
+- 真实换脸套图：头像 1 张 + 参考图 2 张，返回 `requested:2 generated:2`，耗时 165.1s，`charged:true`，余额变为 `0 / 0 / 0`；两张成图均 1024×1536 PNG
+- 坏文件（文本冒充 JPG）POST `/api/gen` 返回 400、`charged:false`，余额保持 `0 / 0 / 0`
+- 本地历史：生成 3 条（1 张生图 + 2 张换脸）；进程退出重启后仍返回 3 条；导出返回 `count:3`，目录内含 `history.json` 与 3 张 PNG
+- 首次真实生图暴露出客户端 30s `ResponseHeaderTimeout` 过短，会在上游出图前误报 502；已调整为 180s，随后两次真实请求均成功
 
-案例快照：allowlist 里 307 条 approved，实际有图的 295 条，缺 12 条（`mvp-verified-C13`、`C21`、`C42`、`C43`、`C47`、`C66`、`C71`、`C77`、`C81`、`seed-PM-001`、`seed-PM-002`、`seed-PM-003`）。README、界面和接口都按实际 295 条显示，不写 307。
+测试额度消耗：`AAAAAAAAAAAA` 共消耗 3 次免费额度（1 次生图 + 2 张换脸）。
+
+案例快照与 allowlist 完全一致：307 条 approved、307 条 built、0 条缺失。缺图问题通过把旧聚合 `fixtures/cases.json` 作为补缺来源、并把 `../assets/...` 规整为站内 `/assets/...` 修复。
 
 ## 已知限制
 
@@ -150,7 +155,7 @@ tools/         案例快照生成脚本、Playwright UI 冒烟
 - Windows 只出 amd64，macOS 只出 arm64（CI 矩阵）；其他架构需自行构建
 - macOS 包由 CI 交叉构建，包结构与 Info.plist 已验证，但未在 Apple Silicon 真机启动
 - 案例快照是打包时的静态副本，新增案例要重新跑 `tools/build_cases.py`
-- 生成依赖 002M 上游；上游 403 / 502 时客户端只报错、不扣额度
+- 生成依赖 002M 上游；上游超时或故障时客户端只报错、不扣额度（以服务端实际状态为准）
 
 ## License
 

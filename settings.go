@@ -173,7 +173,9 @@ func (s *SettingsStore) newHTTPClient(timeout time.Duration) *http.Client {
 		MaxIdleConns:          20,
 		IdleConnTimeout:       60 * time.Second,
 		TLSHandshakeTimeout:   15 * time.Second,
-		ResponseHeaderTimeout: 30 * time.Second,
+		// Image generation legitimately takes longer than a status probe;
+		// the per-call context timeout remains the hard ceiling.
+		ResponseHeaderTimeout: 180 * time.Second,
 	}
 	if proxy == nil {
 		tr.Proxy = nil

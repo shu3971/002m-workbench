@@ -37,6 +37,12 @@ def main(fixtures):
     paths = sorted(glob.glob(os.path.join(fixtures, "cases_*.json")))
     paths = [p for p in paths if not p.endswith("_draft.json")] + \
             [p for p in paths if p.endswith("_draft.json")]
+    # The legacy aggregate keeps a handful of approved ids that never made it
+    # into a batch-specific fixture.  Append it so it only fills the gaps and
+    # never overrides the newer batch records.
+    legacy = os.path.join(fixtures, "cases.json")
+    if os.path.exists(legacy):
+        paths.append(legacy)
 
     by_id = {}
     for path in paths:
@@ -54,6 +60,7 @@ def main(fixtures):
                 row["category"] = "portrait"
             if not (row.get("image") or "").startswith("/"):
                 row["image"] = "/" + (row.get("image") or "").lstrip("/")
+            row["image"] = row["image"].replace("/../", "/")
             by_id[cid] = row
 
     cases = [by_id[cid] for cid in approved if cid in by_id]
